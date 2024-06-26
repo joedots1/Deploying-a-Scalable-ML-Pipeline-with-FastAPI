@@ -34,11 +34,6 @@ encoder = load_model(path)
 path = "model/model.pkl"
 model = load_model(path)
 
-scaler_path = "model/scaler.pkl"
-scaler = None 
-if os.path.exists(scaler_path):
-    scaler = load_model(scaler_path)
-
 #  create a RESTful API using FastAPI
 app = FastAPI()
 
@@ -77,7 +72,6 @@ async def post_inference(data: Data):
         training=False,
         encoder=encoder,
         lb=None,
-        scaler=scaler,
     )
     _inference = inference(model, data_processed)
     return {"result": apply_label(_inference)}

@@ -33,18 +33,17 @@ cat_features = [
     "native-country",
 ]
 
-X_train, y_train, encoder, lb, scaler = process_data(
+X_train, y_train, encoder, lb = process_data(
     train, categorical_features=cat_features, label="salary", training=True
 )
 
-X_test, y_test, _, _, scaler = process_data(
+X_test, y_test, _, _ = process_data(
     test,
     categorical_features=cat_features,
     label="salary",
     training=False,
     encoder=encoder,
     lb=lb,
-    scaler = scaler
 )
 
 model = train_model(X_train, y_train)
@@ -54,8 +53,7 @@ model_path = os.path.join(project_path, "model", "model.pkl")
 save_model(model, model_path)
 encoder_path = os.path.join(project_path, "model", "encoder.pkl")
 save_model(encoder, encoder_path)
-scaler_path = os.path.join(project_path, "model", "scaler.pkl")
-save_model(scaler, scaler_path)
+
 
 # load the model
 model = load_model(model_path)
@@ -72,7 +70,7 @@ for col in cat_features:
     for slicevalue in sorted(test[col].unique()):
         count = test[test[col] == slicevalue].shape[0]
         p, r, fb = performance_on_categorical_slice(
-            test, col, slicevalue, cat_features, "salary", encoder, lb, scaler, model
+            test, col, slicevalue, cat_features, "salary", encoder, lb, model
         )
         with open("slice_output.txt", "a") as f:
             print(f"{col}: {slicevalue}, Count: {count:,}", file=f)

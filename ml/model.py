@@ -97,7 +97,7 @@ def load_model(path):
 
 
 def performance_on_categorical_slice(
-    data, column_name, slice_value, categorical_features, label, encoder, lb, scaler, model
+    data, column_name, slice_value, categorical_features, label, encoder, lb, model
 ):
     """Computes the model metrics on a slice of the data specified by a column name and
 
@@ -122,8 +122,6 @@ def performance_on_categorical_slice(
         Trained sklearn OneHotEncoder, only used if training=False.
     lb : sklearn.preprocessing._label.LabelBinarizer
         Trained sklearn LabelBinarizer, only used if training=False.
-    scaler : sklearn.preprocessing.StandardScaler
-            Trained sklearn StandardScaler, only used if training=False.
     model : ???
         Model used for the task.
 
@@ -139,14 +137,13 @@ def performance_on_categorical_slice(
     data_slice = data[data[column_name] == slice_value]
 
     # process data
-    X_slice, y_slice, _, _, _ = process_data(
+    X_slice, y_slice, _, _ = process_data(
         data_slice,
         categorical_features=categorical_features,
         label=label,
         training=False,
         encoder=encoder,
         lb=lb,
-        scaler=scaler
     )
 
     preds = inference(model, X_slice)
