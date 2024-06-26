@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field
 from ml.data import apply_label, process_data
 from ml.model import inference, load_model
 
+
 # DO NOT MODIFY
 class Data(BaseModel):
     age: int = Field(..., example=37)
@@ -26,24 +27,30 @@ class Data(BaseModel):
     hours_per_week: int = Field(..., example=40, alias="hours-per-week")
     native_country: str = Field(..., example="United-States", alias="native-country")
 
-path = # TODO: enter the path for the saved encoder 
+
+path = "model/encoder.pkl"
 encoder = load_model(path)
 
-path = # TODO: enter the path for the saved model 
+path = "model/model.pkl"
 model = load_model(path)
 
-# TODO: create a RESTful API using FastAPI
-app = # your code here
+scaler_path = "model/scaler.pkl"
+scaler = None 
+if os.path.exists(scaler_path):
+    scaler = load_model(scaler_path)
 
-# TODO: create a GET on the root giving a welcome message
+#  create a RESTful API using FastAPI
+app = FastAPI()
+
+
+#  create a GET on the root giving a welcome message
 @app.get("/")
 async def get_root():
-    """ Say hello!"""
-    # your code here
-    pass
+    """Say hello from FastAPI"""
+    return {"message": "Hello from FastAPI"}
 
 
-# TODO: create a POST on a different path that does model inference
+#  create a POST on a different path that does model inference
 @app.post("/data/")
 async def post_inference(data: Data):
     # DO NOT MODIFY: turn the Pydantic model into a dict.
@@ -65,10 +72,12 @@ async def post_inference(data: Data):
         "native-country",
     ]
     data_processed, _, _, _ = process_data(
-        # your code here
-        # use data as data input
-        # use training = False
-        # do not need to pass lb as input
+        data,
+        categorical_features=cat_features,
+        training=False,
+        encoder=encoder,
+        lb=None,
+        scaler=scaler,
     )
-    _inference = # your code here to predict the result using data_processed
+    _inference = inference(model, data_processed)
     return {"result": apply_label(_inference)}
